@@ -94,6 +94,21 @@ function App() {
     }
   };
 
+  // Friendly text summary for end users
+  const getFriendlyMessage = () => {
+    if (!result) return "";
+
+    if (result.prediction === 1) {
+      return `The customer is likely to SUBSCRIBE (probability ${result.class_1_probability.toFixed(
+        2
+      )}).`;
+    } else {
+      return `The customer is likely to NOT subscribe (probability ${result.class_0_probability.toFixed(
+        2
+      )}).`;
+    }
+  };
+
   return (
     <div
       style={{
@@ -165,7 +180,8 @@ function App() {
             <strong>Model:</strong> {result.model}
           </p>
           <p>
-            <strong>Prediction:</strong> {result.prediction}
+            <strong>Prediction:</strong>{" "}
+            {result.prediction === 1 ? "Will subscribe" : "Will NOT subscribe"}
           </p>
           <p>
             <strong>Class 0 probability:</strong>{" "}
@@ -178,6 +194,7 @@ function App() {
           <p>
             <strong>Confidence:</strong> {result.confidence.toFixed(4)}
           </p>
+          <p style={{ marginTop: 10 }}>{getFriendlyMessage()}</p>
         </div>
       )}
     </div>
