@@ -1,9 +1,10 @@
 // src/App.jsx
 import { useEffect, useState } from "react";
 
+// Backend on Render
 const API_BASE = "https://ml-fastapi-backend-g1bx.onrender.com";
 
-// Change these to match your real 7 feature names and descriptions
+// Seven input features shown to the user
 const FEATURE_DEFS = [
   { name: "age", label: "Age (years)", type: "number" },
   { name: "balance", label: "Account balance", type: "number" },
@@ -27,29 +28,20 @@ function App() {
   const [modelType, setModelType] = useState("decision_tree");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  const [backendReady, setBackendReady] = useState(false);
 
-  // Optional: ping backend to ensure it is up
+  // Optional: ping backend, only log result
   useEffect(() => {
     const checkBackend = async () => {
       try {
         const res = await fetch(API_BASE + "/");
         if (!res.ok) {
-          setError("Backend / endpoint returned error: " + res.status);
+          console.error("Backend / endpoint returned error:", res.status);
           return;
         }
         const data = await res.json();
-        // Optionally, you can compare data.n_features with 7
-        if (data.n_features && data.n_features !== FEATURE_DEFS.length) {
-          setError(
-            `Backend expects ${data.n_features} features, but frontend is configured for ${FEATURE_DEFS.length}.`
-          );
-          return;
-        }
-        setBackendReady(true);
+        console.log("Backend OK, n_features:", data.n_features);
       } catch (err) {
-        console.error(err);
-        setError("Error connecting to backend.");
+        console.error("Error connecting to backend:", err);
       }
     };
     checkBackend();
@@ -64,11 +56,6 @@ function App() {
   const handlePredict = async () => {
     setError("");
     setResult(null);
-
-    if (!backendReady) {
-      setError("Backend is not ready yet.");
-      return;
-    }
 
     // Validate that all inputs are filled
     for (let i = 0; i < FEATURE_DEFS.length; i++) {
